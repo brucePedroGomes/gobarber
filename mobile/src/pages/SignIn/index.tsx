@@ -23,6 +23,8 @@ import Button from '../../components/Button';
 
 import getValidationErrors from '../../utils/getValidationErrors';
 
+import { useAuth } from '../../hooks/Auth';
+
 import {
   Container,
   Title,
@@ -53,36 +55,48 @@ const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const passwordInputRef = useRef<TextInput>(null);
 
-  const handleSignIn = useCallback(async (data: SignInFormData) => {
-    try {
-      formRef.current?.setErrors({});
+  const { signIn, user } = useAuth();
 
-      const schema = Yup.object().shape({
-        email: Yup.string()
-          .required('Email is required')
-          .email('E-mail invalid'),
-        password: Yup.string().required('password is required'),
-      });
+  console.log(user);
 
-      await schema.validate(data, {
-        abortEarly: false,
-      });
-    } catch (err) {
-      if (err instanceof Yup.ValidationError) {
-        const errors = getValidationErrors(err);
+  const handleSignIn = useCallback(
+    async (data: SignInFormData) => {
+      try {
+        formRef.current?.setErrors({});
 
-        console.log(errors);
+        const schema = Yup.object().shape({
+          email: Yup.string()
+            .required('Email is required')
+            .email('E-mail invalid'),
+          password: Yup.string().required('password is required'),
+        });
 
-        formRef.current?.setErrors(errors);
-        return;
+        await schema.validate(data, {
+          abortEarly: false,
+        });
+
+        await signIn({
+          email: data.email,
+          password: data.password,
+        });
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
+
+          console.log(errors);
+
+          formRef.current?.setErrors(errors);
+          return;
+        }
+
+        Alert.alert(
+          'authentication error',
+          'review your credentials and try again',
+        );
       }
-
-      Alert.alert(
-        'authentication error',
-        'review your credentials and try again',
-      );
-    }
-  }, []);
+    },
+    [signIn],
+  );
 
   return (
     <>

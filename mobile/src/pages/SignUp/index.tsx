@@ -46,46 +46,49 @@ const SignUp: React.FC = () => {
     });
   }, []);
 
-  const { goBack } = useNavigation();
+  const navigation = useNavigation();
   const formRef = useRef<FormHandles>(null);
 
   const emailInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
   const confirmPasswordInputRef = useRef<TextInput>(null);
 
-  const handleSignUp = useCallback(async (data: SignUpFormData) => {
-    try {
-      formRef.current?.setErrors({});
-      const schema = Yup.object().shape({
-        name: Yup.string().required('Name is required'),
-        email: Yup.string()
-          .required('Email is required')
-          .email('E-mail invalid'),
-        password: Yup.string().min(6, 'minimum of 6 digits'),
-        confirmPassword: Yup.string()
-          .oneOf([Yup.ref('password'), null])
-          .required('password confirm is required'),
-      });
+  const handleSignUp = useCallback(
+    async (data: SignUpFormData) => {
+      try {
+        formRef.current?.setErrors({});
+        const schema = Yup.object().shape({
+          name: Yup.string().required('Name is required'),
+          email: Yup.string()
+            .required('Email is required')
+            .email('E-mail invalid'),
+          password: Yup.string().min(6, 'minimum of 6 digits'),
+          confirmPassword: Yup.string()
+            .oneOf([Yup.ref('password'), null])
+            .required('password confirm is required'),
+        });
 
-      await schema.validate(data, {
-        abortEarly: false,
-      });
+        await schema.validate(data, {
+          abortEarly: false,
+        });
 
-      await api.post('/users', data);
+        await api.post('/users', data);
 
-      Alert.alert('Successful registration', 'You can now login.');
+        Alert.alert('Successful registration', 'You can now login.');
 
-      goBack();
-    } catch (err) {
-      if (err instanceof Yup.ValidationError) {
-        const errors = getValidationErrors(err);
-        formRef.current?.setErrors(errors);
-        console.log(errors);
-        console.log(err);
+        navigation.goBack();
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
+          formRef.current?.setErrors(errors);
+          console.log(errors);
+          console.log(err);
+        }
+        Alert.alert('Registration error', 'try again');
       }
-      Alert.alert('Registration error', 'try again');
-    }
-  }, []);
+    },
+    [navigation],
+  );
 
   return (
     <>
@@ -160,7 +163,7 @@ const SignUp: React.FC = () => {
       {!keyboard && (
         <BackToSignIn
           onPress={() => {
-            goBack();
+            navigation.goBack();
           }}
         >
           <BackToSignInText>Already a member? Sign in</BackToSignInText>
