@@ -11,7 +11,7 @@ import logoImg from '../../assets/logo.svg';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 
-import getValidationErros from '../../utils/getValidationErrors';
+import getValidationErrors from '../../utils/getValidationErrors';
 
 import { Container, Content, Background, AnimationContainer } from './styles';
 
@@ -57,7 +57,7 @@ const SignUp: React.FC = () => {
         });
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
-          const errors = getValidationErros(err);
+          const errors = getValidationErrors(err);
           formRef.current?.setErrors(errors);
           return;
         }

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import {
   Image,
   View,
@@ -7,6 +7,7 @@ import {
   ScrollView,
   Keyboard,
   TextInput,
+  Alert,
 } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
@@ -14,10 +15,13 @@ import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 
 import Icon from 'react-native-vector-icons/Feather';
+import * as Yup from 'yup';
 import logoImg from '../../assets/logo.png';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
+
+import getValidationErrors from '../../utils/getValidationErrors';
 
 import {
   Container,
@@ -28,21 +32,56 @@ import {
   CreateAccountButtonText,
 } from './styles';
 
+interface SignInFormData {
+  email: string;
+  password: string;
+}
+
 const SignIn: React.FC = () => {
   const [keyboard, setKeyboard] = useState(false);
-  Keyboard.addListener('keyboardDidShow', () => {
-    setKeyboard(true);
-  });
-  Keyboard.addListener('keyboardDidHide', () => {
-    setKeyboard(false);
-  });
+
+  useEffect(() => {
+    Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboard(true);
+    });
+    Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboard(false);
+    });
+  }, []);
 
   const navigation = useNavigation();
   const formRef = useRef<FormHandles>(null);
   const passwordInputRef = useRef<TextInput>(null);
 
-  const handleSignIn = useCallback((data: object) => {
-    console.log(data);
+  const handleSignIn = useCallback(async (data: SignInFormData) => {
+    try {
+      formRef.current?.setErrors({});
+
+      const schema = Yup.object().shape({
+        email: Yup.string()
+          .required('Email is required')
+          .email('E-mail invalid'),
+        password: Yup.string().required('password is required'),
+      });
+
+      await schema.validate(data, {
+        abortEarly: false,
+      });
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        const errors = getValidationErrors(err);
+
+        console.log(errors);
+
+        formRef.current?.setErrors(errors);
+        return;
+      }
+
+      Alert.alert(
+        'authentication error',
+        'review your credentials and try again',
+      );
+    }
   }, []);
 
   return (

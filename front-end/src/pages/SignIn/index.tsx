@@ -10,7 +10,7 @@ import logoImg from '../../assets/logo.svg';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
-import getValidationErros from '../../utils/getValidationErrors';
+import getValidationErrors from '../../utils/getValidationErrors';
 
 import { useAuth } from '../../hooks/Auth';
 import { useToast } from '../../hooks/Toast';
@@ -50,7 +50,7 @@ const SignIn: React.FC = () => {
         });
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
-          const errors = getValidationErros(err);
+          const errors = getValidationErrors(err);
           formRef.current?.setErrors(errors);
           return;
         }
