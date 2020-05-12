@@ -1,6 +1,6 @@
 import { Response, Request } from 'express';
 import { container } from 'tsyringe';
-import CreateAppointmentService from '@modules/appointments/Services/CreateAppointmentService';
+import CreateAppointmentService from '@modules/appointments/services/CreateAppointmentService';
 import { parseISO } from 'date-fns';
 
 class AppointmentsController {
