@@ -1,10 +1,10 @@
 import FakeUsersRepository from '../repositories/fakes/FakeUsersRepository';
-import CreateUserRepository from './CreateUserService';
+import CreateUserService from './CreateUserService';
 
 describe('CreateUser', () => {
   it('should be able to create a new User', async () => {
     const fakeUsersRepository = new FakeUsersRepository();
-    const createUser = new CreateUserRepository(fakeUsersRepository);
+    const createUser = new CreateUserService(fakeUsersRepository);
 
     const users = await createUser.execute({
       name: 'John Doe',
