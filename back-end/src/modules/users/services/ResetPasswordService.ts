@@ -3,38 +3,41 @@ import { injectable, inject } from 'tsyringe';
 
 import AppError from '@shared/errors/AppError';
 
-import IMailProvider from '@shared/container/providers/MailProvider/models/IMailProvider';
 import IUsersRepository from '../repositories/IUsersRepository';
 import IUserTokenRepository from '../repositories/IUserTokensRepository';
 
 interface IRequest {
-  email: string;
+  password: string;
+  token: string;
 }
 
 @injectable()
-class SendForgotPasswordEmailService {
+class ResetPasswordService {
   constructor(
     @inject('UsersRepository')
     private usersRepository: IUsersRepository,
-
-    @inject('MailProvider')
-    private mailProvider: IMailProvider,
 
     @inject('UserTokenRepository')
     private userTokenRepository: IUserTokenRepository,
   ) {}
 
-  public async execute({ email }: IRequest): Promise<void> {
-    const user = await this.usersRepository.findByEmail(email);
+  public async execute({ password, token }: IRequest): Promise<void> {
+    const userToken = await this.userTokenRepository.findByToken(token);
 
-    if (!user) {
-      throw new AppError('User does not exists');
+    if (!userToken) {
+      throw new AppError('User token does not exists');
     }
 
-    await this.userTokenRepository.generate(user.id);
+    const user = await this.usersRepository.findById(userToken.user_id);
 
-    this.mailProvider.sendMail(email, 'Password recovery');
+    if (!user) {
+      throw new AppError('User token does not exists');
+    }
+
+    user.password = password;
+
+    await this.usersRepository.save(user);
   }
 }
 
-export default SendForgotPasswordEmailService;
+export default ResetPasswordService;
