@@ -4,7 +4,7 @@ import FakeStorageProvider from '@shared/container/providers/StorageProvider/fak
 import FakeUsersRepository from '@modules/users/repositories/fakes/FakeUsersRepository';
 import UpdateUserAvatar from './UpdateUserAvatarService';
 
-describe('CreateUser', () => {
+describe('UpdateUserAvatar', () => {
   it('UpdateUserAvatar', async () => {
     const fakeUsersRepository = new FakeUsersRepository();
     const fakeStorageProvider = new FakeStorageProvider();
@@ -37,7 +37,7 @@ describe('CreateUser', () => {
       fakeStorageProvider,
     );
 
-    expect(
+    await expect(
       updateUserAvatar.execute({
         user_id: 'no-exists',
         avatarFilename: 'avatar.jpg',
