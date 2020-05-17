@@ -3,8 +3,10 @@ import { injectable, inject } from 'tsyringe';
 
 import AppError from '@shared/errors/AppError';
 
+import { differenceInHours } from 'date-fns';
 import IUsersRepository from '../repositories/IUsersRepository';
 import IUserTokenRepository from '../repositories/IUserTokensRepository';
+import IHashProvider from '../providers/HashProvider/models/IHashProvider';
 
 interface IRequest {
   password: string;
@@ -19,6 +21,9 @@ class ResetPasswordService {
 
     @inject('UserTokenRepository')
     private userTokenRepository: IUserTokenRepository,
+
+    @inject('HashProvider')
+    private hashProvider: IHashProvider,
   ) {}
 
   public async execute({ password, token }: IRequest): Promise<void> {
@@ -34,7 +39,13 @@ class ResetPasswordService {
       throw new AppError('User token does not exists');
     }
 
-    user.password = password;
+    const tokenCreatedAt = userToken.created_at;
+
+    if (differenceInHours(tokenCreatedAt, Date.now()) > 2) {
+      throw new AppError('Token expired');
+    }
+
+    user.password = await this.hashProvider.generateHash(password);
 
     await this.usersRepository.save(user);
   }
