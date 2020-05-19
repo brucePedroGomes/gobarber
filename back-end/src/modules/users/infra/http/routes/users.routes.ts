@@ -1,7 +1,4 @@
 import { Router } from 'express';
-import { getRepository } from 'typeorm';
-
-import User from '@modules/users/infra/typeorm/entities/User';
 
 import uploadConfig from '@config/upload';
 import multer from 'multer';
@@ -15,13 +12,6 @@ const usersRouter = Router();
 
 const usersController = new UsersController();
 const userAvatarController = new UserAvatarController();
-
-usersRouter.get('/', async (request, response) => {
-  const usersRepositoryTest = getRepository(User);
-  const users = await usersRepositoryTest.find();
-
-  return response.json(users);
-});
 
 usersRouter.post('/', usersController.create);
 
