@@ -4,16 +4,23 @@ import FakeStorageProvider from '@shared/container/providers/StorageProvider/fak
 import FakeUsersRepository from '@modules/users/repositories/fakes/FakeUsersRepository';
 import UpdateUserAvatar from './UpdateUserAvatarService';
 
-describe('UpdateUserAvatar', () => {
-  it('UpdateUserAvatar', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const fakeStorageProvider = new FakeStorageProvider();
+let fakeUsersRepository: FakeUsersRepository;
+let fakeStorageProvider: FakeStorageProvider;
 
-    const updateUserAvatar = new UpdateUserAvatar(
+let updateUserAvatar: UpdateUserAvatar;
+
+describe('UpdateUserAvatar', () => {
+  beforeEach(() => {
+    fakeUsersRepository = new FakeUsersRepository();
+    fakeStorageProvider = new FakeStorageProvider();
+
+    updateUserAvatar = new UpdateUserAvatar(
       fakeUsersRepository,
       fakeStorageProvider,
     );
+  });
 
+  it('UpdateUserAvatar', async () => {
     const user = await fakeUsersRepository.create({
       name: 'John Doe',
       email: 'John@Doe.com',
@@ -29,14 +36,6 @@ describe('UpdateUserAvatar', () => {
   });
 
   it('UpdateUserAvatar from non existing user', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const fakeStorageProvider = new FakeStorageProvider();
-
-    const updateUserAvatar = new UpdateUserAvatar(
-      fakeUsersRepository,
-      fakeStorageProvider,
-    );
-
     await expect(
       updateUserAvatar.execute({
         user_id: 'no-exists',
@@ -46,15 +45,7 @@ describe('UpdateUserAvatar', () => {
   });
 
   it('should delete old avatar when updating new one', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const fakeStorageProvider = new FakeStorageProvider();
-
     const deleteFile = jest.spyOn(fakeStorageProvider, 'deleteFile');
-
-    const updateUserAvatar = new UpdateUserAvatar(
-      fakeUsersRepository,
-      fakeStorageProvider,
-    );
 
     const user = await fakeUsersRepository.create({
       name: 'John Doe',
