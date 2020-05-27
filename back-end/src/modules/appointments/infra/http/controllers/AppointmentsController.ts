@@ -13,6 +13,7 @@ class AppointmentsController {
     const appointment = await createAppointment.execute({
       date: parsedDate,
       provider_id,
+      user_id: request.user.id,
     });
 
     return response.json(appointment);
