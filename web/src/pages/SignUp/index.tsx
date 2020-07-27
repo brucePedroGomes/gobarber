@@ -51,7 +51,7 @@ const SignUp: React.FC = () => {
         history.push('/');
 
         addToast({
-          type: 'sucess',
+          type: 'success',
           title: 'Successful registration',
           description: 'Welcome to Gobarber',
         });

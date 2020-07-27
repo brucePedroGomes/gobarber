@@ -9,7 +9,7 @@ interface ToastContextData {
 
 export interface ToastMessage {
   id: string;
-  type?: 'sucess' | 'error' | 'info';
+  type?: 'success' | 'error' | 'info';
   title: string;
   description?: string;
 }
