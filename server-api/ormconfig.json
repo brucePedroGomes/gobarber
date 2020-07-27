@@ -14,7 +14,7 @@
     }
   },
   {
-    "name": "mongo",
+    "name": "mongodbgobarber",
     "type": "mongodb",
     "host": "localhost",
     "port": 27017,
