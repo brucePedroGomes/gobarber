@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "setup": "cd server-api && yarn && cd ../web && yarn && cd ../mobile && yarn"
+  },
+  "name": "gobarber",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/pedroleinar/gobarber.git",
+  "author": "pedro gomes <pedroleinar@hotmail.com>",
+  "license": "MIT"
+}
