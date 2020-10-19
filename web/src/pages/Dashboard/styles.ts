@@ -72,13 +72,13 @@ export const Schedule = styled.div`
 
   p {
     margin-top: 8px;
-    color: #fff;
+    color: #ff9000;
     font-weight: 400;
 
     span + span {
       margin-left: 8px;
       padding-left: 8px;
-      border-left: 1px solid #ff9000;
+      border-left: 1px solid #d2691e;
     }
   }
 `;
@@ -96,6 +96,7 @@ export const Appointment = styled.div`
     display: flex;
     align-items: center;
     color: #f4ede8;
+    width: 40px;
 
     svg {
       color: #ff9000;
