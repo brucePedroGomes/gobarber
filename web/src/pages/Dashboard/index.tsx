@@ -21,6 +21,7 @@ import {
 import logoImg from '../../assets/logo.svg';
 import { useAuth } from '../../hooks/Auth';
 import api from '../../services/api';
+import { Link } from 'react-router-dom';
 
 interface MonthAvailability {
   day: number;
@@ -132,6 +133,8 @@ const Dashboard: React.FC = () => {
     );
   }, [appointments]);
 
+  console.log('user', user.avatar_url);
+
   return (
     <Container>
       <Header>
@@ -142,7 +145,9 @@ const Dashboard: React.FC = () => {
 
             <div>
               <span>Welcome,</span>
-              <strong>{user.name}</strong>
+              <Link to="/profile">
+                <strong>{user.name}</strong>
+              </Link>
             </div>
           </Profile>
 
