@@ -22,7 +22,9 @@ import { useAuth } from '../../hooks/Auth';
 interface ProfileFormData {
   name: string;
   email: string;
+  old_password: string;
   password: string;
+  password_confirmation: string;
 }
 
 const Profile: React.FC = () => {
@@ -41,21 +43,35 @@ const Profile: React.FC = () => {
           email: Yup.string()
             .required('Email is required')
             .email('E-mail invalid'),
-          password: Yup.string().min(6, 'minimum of 6 digits'),
+          old_password: Yup.string(),
+          password: Yup.string().when('old_password', {
+            is: (val) => !!val.length,
+            then: Yup.string().required('password is required'),
+            otherwise: Yup.string(),
+          }),
+          password_confirmation: Yup.string()
+            .when('old_password', {
+              is: (val) => !!val.length,
+              then: Yup.string().required('confirmation password is required'),
+              otherwise: Yup.string(),
+            })
+            .oneOf([Yup.ref('password'), null], 'incorrect confirmation'),
         });
 
         await schema.validate(data, {
           abortEarly: false,
         });
 
-        await api.post('/users', data);
+        const response = await api.put('/profile', data);
 
-        history.push('/');
+        updatedUser(response.data);
+
+        history.push('/dashboard');
 
         addToast({
           type: 'success',
-          title: 'Successful registration',
-          description: 'Welcome to Gobarber',
+          title: 'profile updated successfully',
+          description: 'information updated sucessfully',
         });
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
@@ -65,12 +81,12 @@ const Profile: React.FC = () => {
         }
         addToast({
           type: 'error',
-          title: 'Registration error',
+          title: 'update error',
           description: 'Try again',
         });
       }
     },
-    [addToast, history],
+    [addToast, history, updatedUser],
   );
 
   const handleAvatarChange = useCallback(
@@ -83,8 +99,6 @@ const Profile: React.FC = () => {
 
       updatedUser(response.data);
       addToast({ type: 'success', title: 'updated avatar' });
-
-      return;
     },
     [addToast, updatedUser],
   );
@@ -129,7 +143,7 @@ const Profile: React.FC = () => {
             />
 
             <Input
-              name="new_password"
+              name="password"
               icon={FiLock}
               placeholder="new password"
               type="password"
